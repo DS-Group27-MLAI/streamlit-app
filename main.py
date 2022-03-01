@@ -1,3 +1,9 @@
+"""
+Adapted from Source: 
+https://testdriven.io/blog/fastapi-streamlit/
+
+"""
+
 import uuid
 
 import cv2
@@ -14,10 +20,13 @@ import inference
 
 app = FastAPI()
 
-model_list = [
+anomaly_detection_models = [
     'models/vae/model_best_weights_anomaly_detection_vae_designed_completion.h5',
     'models/vae/model_best_weights_anomaly_detection_vae_existing.h5',
-    'model_best_weights_anomaly_detection_convae_designed.h5',
+    'model_best_weights_anomaly_detection_convae_designed.h5'
+]
+
+classification_models = [
     'model_best_weights_classification_resnet_existing_completion.h5'
 ]
 
@@ -27,12 +36,15 @@ def read_root():
     return {"message": "Welcome from the API"}
 
 
-@app.post("/{style}")
+@app.post("/model/{style}")
 def get_image(style: str, file: UploadFile = File(...)):
     image = np.array(Image.open(file.file))
-    output, resized = inference.best_model(model_list, image)
-    # name = f"/storage/{str(uuid.uuid4())}.jpg"
-    # cv2.imwrite(name, output)
+    if style == "anomaly_detection":
+        output = inference.ad_best_model(anomaly_detection_models, image)
+    elif style == "classification":
+        image = cv2.resize(image, (224,224))
+        output = inference.classification_best_model(classification_models, image)
+    
     return {"output": output}
 
 

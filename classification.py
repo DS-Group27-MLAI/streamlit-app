@@ -8,7 +8,7 @@ from utils import prepare_image_from_bytes
 anomaly_images_test = glob('images/anomaly/*')
 normal_images_test = glob('images/normal/*')
 
-classification_model_path = 'models/model_best_weights_classification_1.h5'
+classification_model_path = 'models/resnet/model_best_weights_classification_resnet_existing_completion.h5'
 
 model = load_model(classification_model_path)
 

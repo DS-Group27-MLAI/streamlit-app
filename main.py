@@ -23,11 +23,11 @@ app = FastAPI()
 anomaly_detection_models = [
     'models/vae/model_best_weights_anomaly_detection_vae_designed_completion.h5',
     'models/vae/model_best_weights_anomaly_detection_vae_existing.h5',
-    'model_best_weights_anomaly_detection_convae_designed.h5'
+    'models/convae/model_best_weights_anomaly_detection_convae_designed.h5'
 ]
 
 classification_models = [
-    'model_best_weights_classification_resnet_existing_completion.h5'
+    'models/resnet/model_best_weights_classification_resnet_existing_completion.h5'
 ]
 
 
@@ -40,6 +40,7 @@ def read_root():
 def get_image(style: str, file: UploadFile = File(...)):
     image = np.array(Image.open(file.file))
     if style == "anomaly_detection":
+        image = cv2.resize(image, (224,224))
         output = inference.ad_best_model(anomaly_detection_models, image)
     elif style == "classification":
         image = cv2.resize(image, (224,224))

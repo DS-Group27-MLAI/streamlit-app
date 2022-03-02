@@ -1,16 +1,13 @@
-from keras.models import load_model
 import cv2
 from glob import glob
 import streamlit as st
 import numpy as np
+import requests
+from PIL import Image
 from utils import prepare_image_from_bytes
 
 anomaly_images_test = glob('images/anomaly/*')
 normal_images_test = glob('images/normal/*')
-
-classification_model_path = 'models/model_best_weights_classification_1.h5'
-
-model = load_model(classification_model_path)
 
 
 def load_image(label, anomaly=True):
@@ -22,11 +19,6 @@ def load_image(label, anomaly=True):
     test_X = cv2.resize(gray, (224, 224))
 
     return test_X
-
-
-def infer_model(model, image):
-    y_pred = model.predict((image.reshape(-1, 224, 224)) / 255)
-    return True if y_pred[0] > 0.5 else False
 
 
 def classification_inference(labels=[0, 1]):
@@ -51,9 +43,11 @@ def classification_inference(labels=[0, 1]):
     uploaded_file = st.file_uploader(label="Choose a file for Anomaly Detection", type='jpeg')
     if uploaded_file is not None:
         # To read file as bytes:
-        bytes_data = uploaded_file.getvalue()
-        image = prepare_image_from_bytes(st, bytes_data)
-        result = infer_model(model, image)
+        
+        files = {"file": uploaded_file.getvalue()}
+        res = requests.post(f"http://localhost:8080/model/classification", files=files)
+        is_anomaly = res.json()
+        result = is_anomaly.get("output")
         if result:
             st.text("Anomaly Image")
         else:

@@ -13,3 +13,5 @@ STYLES = {
     "the wave": "the_wave",
     "udnie": "udnie",
 }
+
+API_HOST = 'http://localhost:8080/'

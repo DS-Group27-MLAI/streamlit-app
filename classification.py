@@ -5,6 +5,7 @@ import numpy as np
 import requests
 from PIL import Image
 from utils import prepare_image_from_bytes
+import config
 
 anomaly_images_test = glob('images/anomaly/*')
 normal_images_test = glob('images/normal/*')
@@ -45,7 +46,7 @@ def classification_inference(labels=[0, 1]):
         # To read file as bytes:
         
         files = {"file": uploaded_file.getvalue()}
-        res = requests.post(f"http://localhost:8080/model/classification", files=files)
+        res = requests.post(config.API_HOST + f"model/classification", files=files)
         is_anomaly = res.json()
         result = is_anomaly.get("output")
         if result:

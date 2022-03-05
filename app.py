@@ -9,15 +9,31 @@ def main():
   menu = ['Video', "About", "Classification Inference", "Anomaly Detection Inference"]
   choice = st.sidebar.selectbox('Menu', menu)
 
-  if choice == "Video":
-    st.video(open("PNG_9048.mp4", 'rb'), format='video/mp4', start_time=0)
+add_home = st.sidebar.header("[Home](https://wandererluzon.wixsite.com/my-site)")
+add_readme = st.sidebar.header("[Read Me](https://wandererluzon.wixsite.com/my-site)")
+add_about = st.sidebar.header("[About](https://wandererluzon.wixsite.com/my-site)")
+add_members = st.sidebar.header("[Members](https://wandererluzon.wixsite.com/my-site)")
 
-  if choice == "Classification Inference":
+
+
+option_selected = st.radio(
+    "Select the Image processing method",
+    ('Anomaly Detection', 'Classification of Image'))
+if option_selected == 'Anomaly Detection':
+    st.write('Anomaly Detection is selected')
+    anomaly_detection_inference()
+else:
+    st.write("Classification of Image is selected")
     classification_inference()
 
-  if choice == "Anomaly Detection Inference":
-    anomaly_detection_inference()
+#if choice == "Video":
+#    st.video(open("PNG_9048.mp4", 'rb'), format='video/mp4', start_time=0)
+
+#if choice == "Classification Inference":
+#    classification_inference()
+#if choice == "Anomaly Detection Inference":
+ #   anomaly_detection_inference()
     
 if __name__ == "__main__":
   
-  main()
+ main()

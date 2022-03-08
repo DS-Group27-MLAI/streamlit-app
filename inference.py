@@ -89,6 +89,6 @@ def ad_best_model(idx, model_list, image, image28x28=None):
         image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         image = cv2.resize(image, (56,56))
         result, out_image = vae_ad_infer_model(model_list[idx], image)
-        viz_result = visualization.viz_vae_ssim(image, out_image, SSIMLoss)
+        viz_result, image_label = visualization.viz_vae_ssim(image, out_image, SSIMLoss)
 
     return result, viz_result, image_label

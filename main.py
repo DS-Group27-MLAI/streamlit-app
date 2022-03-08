@@ -33,7 +33,7 @@ classification_models = [
     'models/densenet/model_best_weights_classification_densenet_existing_completion.h5'
 ]
 
-best_model_anomaly_detection = 1
+best_model_anomaly_detection = 0
 best_model_classification = 0
 
 @app.get("/")

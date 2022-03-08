@@ -40,7 +40,11 @@ def viz_vae_ssim(in_image, out_image, SSIMLoss):
   filename = 'images/temp/' + str(uuid.uuid4()) + ".jpg"
   plt.savefig(filename)
   
-  return filename
+  plt.close()
+  
+  image_label = 'Anomaly' if ssimloss > 0.55 else 'Normal'
+  
+  return filename, image_label
 
 def KL_DIVERGENCE(X_pca, pca, score1, score2, s1=1, s2=0, size_of_golden_set=3):
   Q_j_i_array = []

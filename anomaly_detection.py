@@ -43,6 +43,7 @@ def anomaly_detection_inference(labels=[0, 1]):
     st.text("Send the model to the server and detect whether the image is \nnormal/anomaly from the best model")
     st.text("Please upload the images to get another image output, so that SSIM Loss can be \nevaluated")
     uploaded_file = st.file_uploader(label="Choose a file for Anomaly Detection", type='jpeg')
+    col1, col2, col3 = st.columns(3)
     if uploaded_file is not None:
         # To read file as bytes:
         
@@ -50,4 +51,7 @@ def anomaly_detection_inference(labels=[0, 1]):
         res = requests.post(f"http://localhost:8080/model/anomaly_detection", files=files)
         img_path = res.json()
         result = np.array(Image.open(img_path.get("output")))
-        st.image(result, caption='Output Image from network')
+        col1.image(result, caption='Output Image from network')
+        viz_result = np.array(Image.open(img_path.get("viz_output")))
+        col2.image(viz_result, caption='Visualization Output Image from network')
+        col3.text(img_path.get("label") + " Image")

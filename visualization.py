@@ -62,3 +62,32 @@ def viz_vae_ssim(in_image, out_image, SSIMLoss):
   image_label = 'Anomaly' if ssimloss > 0.55 else 'Normal'
   
   return filename, image_label
+
+def viz_cvae_hist(in_image, out_image, SSIMLoss):
+  anomaly_scores_train = pickle.load(open("models/vae_code/anomaly_scores_train.pkl", "rb"))
+  hist = pickle.load(open("models/vae_code/HistGradientBoostingClassifier.pkl", "rb"))
+  
+  pred, z = out_image
+  
+  y_pred_labels = hist.predict(anomaly_scores_train)
+  
+  label = hist.predict(z)
+  
+  image_label = "Anomaly" if label == 1 else "Normal"
+  
+  pca = PCA(n_components=2)
+  anomaly_pca = pca.fit_transform(anomaly_scores_train)
+  anomaly_z = pca.transform(z)
+  
+  plt.scatter(anomaly_pca[y_pred_labels==0,0], anomaly_pca[y_pred_labels==0,1], label='Normal Images', color='green')
+  plt.scatter(anomaly_pca[y_pred_labels==1,0], anomaly_pca[y_pred_labels==1,1], label='Anomaly Images', color='orange')
+  plt.scatter(anomaly_z[:,0], anomaly_z[:,1], label=image_label + " Input Image", color='red' if image_label == "Anomaly" else 'blue')
+  plt.title("Predicted Images and marked " + 'red' if image_label == "Anomaly" else 'blue' + " is " + image_label + " Image")
+  plt.legend()
+  
+  filename = 'images/temp/' + str(uuid.uuid4()) + ".jpg"
+  plt.savefig(filename)
+  
+  plt.close()
+  
+  return filename, image_label

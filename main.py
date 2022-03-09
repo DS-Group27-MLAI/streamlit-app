@@ -34,7 +34,7 @@ classification_models = [
 ]
 
 # Best Model with AD (Anomaly Detection) with index 1 (VAE Model)
-best_model_anomaly_detection = 1
+best_model_anomaly_detection = 0
 
 # Best Model with Clasisification with index 0 (ResNet)
 best_model_classification = 0

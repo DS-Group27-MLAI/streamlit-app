@@ -40,7 +40,7 @@ def anomaly_detection_inference(labels=[0, 1]):
             image_56x56 = cv2.resize(image, (56, 56))
             columns[ii+len(labels)].image(image_56x56, caption="Normal Image")
 
-    st.subheader("Please upload the image in RGB Format")
+    st.subheader("Please upload the image")
     st.text("Send the model to the server and detect whether the image is \nnormal/anomaly from the best model")
     st.text("Please upload the images to get another image output, so that SSIM Loss can be \nevaluated")
     uploaded_file = st.file_uploader(label="Choose a file for Anomaly Detection", type='jpeg')

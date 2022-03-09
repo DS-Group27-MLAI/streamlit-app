@@ -1,3 +1,4 @@
+# import necessary libraries
 from matplotlib import axes
 import numpy as np
 import scipy
@@ -10,8 +11,16 @@ import cv2
 from sklearn.decomposition import PCA
 from sklearn.manifold import TSNE
 
+"""
+Visualization for Classification
+Parameters:
+  - image: 
+  - image_label: The anomaly or normal image label
+  - y_pred: predicted image from the network
+  - network: the network variable
+"""
 def viz_classification(image, image_label, y_pred, network='resnet'):
-  folder_name = 'resnet_code' if network == 'resnet' else 'densenet_code'
+  folder_name = 'resnet_code' if network == 'resnet' else 'resnet_code'
   y_pred_test = pickle.load(open("models/" + folder_name + "/y_pred_test.pkl", "rb"))
   y_pred_classes = np.zeros(len(y_pred_test))
   y_pred_classes[np.array(y_pred_test).flatten() > 0.5] = 1
@@ -28,6 +37,13 @@ def viz_classification(image, image_label, y_pred, network='resnet'):
   
   return filename
 
+"""
+Visualization for Anomaly Detection
+Parameters:
+  - in_image: Input Image
+  - out_image: Output Image
+  - SSIMLoss: SSIMLoss
+"""
 def viz_vae_ssim(in_image, out_image, SSIMLoss):
   ssim_test_noaug = pickle.load(open("models/vae_code/ssim_test_noaug.pkl", "rb"))
   s1 = np.array([s_.numpy() for s_ in ssim_test_noaug[0]])
@@ -46,13 +62,3 @@ def viz_vae_ssim(in_image, out_image, SSIMLoss):
   image_label = 'Anomaly' if ssimloss > 0.55 else 'Normal'
   
   return filename, image_label
-
-def mapping_y_pred_labels_gmm(gmm, y_pred_labels, results_data):
-    cluster_x = gmm.predict(results_data[results_data[:,0].argmax(), :].reshape(-1,2))
-    cluster_y = gmm.predict(results_data[results_data[:,1].argmax(), :].reshape(-1,2))
-    
-    y_pred_new_labels = np.zeros_like(y_pred_labels)
-    y_pred_new_labels[y_pred_labels==cluster_x] = 0
-    y_pred_new_labels[y_pred_labels==cluster_y] = 1
-    
-    return y_pred_new_labels

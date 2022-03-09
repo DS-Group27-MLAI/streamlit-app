@@ -6,6 +6,7 @@ import numpy as np
 from utils import prepare_image_from_bytes
 import requests
 from PIL import Image
+import config
 
 anomaly_images_test = glob('images/anomaly/*')
 normal_images_test = glob('images/normal/*')
@@ -48,7 +49,7 @@ def anomaly_detection_inference(labels=[0, 1]):
         # To read file as bytes:
         
         files = {"file": uploaded_file.getvalue()}
-        res = requests.post(f"http://localhost:8080/model/anomaly_detection", files=files)
+        res = requests.post(config.API_HOST + f"model/anomaly_detection", files=files)
         img_path = res.json()
         result = np.array(Image.open(img_path.get("output")))
         col1.image(result, caption='Output Image from network')

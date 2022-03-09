@@ -4,8 +4,9 @@ https://testdriven.io/blog/fastapi-streamlit/
 
 """
 
-import uuid
+# Import Necessary Libraries
 
+import uuid
 import cv2
 import uvicorn
 from fastapi import File
@@ -13,11 +14,10 @@ from fastapi import FastAPI
 from fastapi import UploadFile
 import numpy as np
 from PIL import Image
-
 import config
 import inference
 
-
+# call FastAPI app
 app = FastAPI()
 
 # in order of performance
@@ -33,14 +33,31 @@ classification_models = [
     'models/densenet/model_best_weights_classification_densenet_existing_completion.h5'
 ]
 
+# Best Model with AD (Anomaly Detection) with index 1 (VAE Model)
 best_model_anomaly_detection = 1
+
+# Best Model with Clasisification with index 0 (ResNet)
 best_model_classification = 0
 
+
+"""
+REST API:
+GET /
+    - Displays the message Welcome from the API
+"""
 @app.get("/")
 def read_root():
     return {"message": "Welcome from the API"}
 
 
+"""
+REST API:
+POST /model/classification
+    - Uploaded File
+
+POST /model/anomaly_detection
+    - Uploaded File
+"""
 @app.post("/model/{style}")
 def get_image(style: str, file: UploadFile = File(...)):
     image = np.array(Image.open(file.file))

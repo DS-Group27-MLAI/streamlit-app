@@ -78,14 +78,8 @@ def ad_best_model(idx, model_list, image, image28x28=None):
         image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         image28x28 = cv2.resize(image, (28,28))
         result = conv_ad_infer_model(model_list[idx], image, image28x28)
-    # cvae
-    elif idx == 1:
-        image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-        image = cv2.resize(image, (56,56))
-        result, out_data = cvae_ad_infer_model(model_list[idx], image)
-        viz_result, image_label = visualization.viz_cvae_gmm(image, out_data)
     # vae
-    elif idx == 0:
+    elif idx == 1:
         image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         image = cv2.resize(image, (56,56))
         result, out_image = vae_ad_infer_model(model_list[idx], image)

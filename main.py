@@ -22,8 +22,8 @@ app = FastAPI()
 
 # in order of performance
 anomaly_detection_models = [
-    'models/vae/model_best_weights_anomaly_detection_vae.h5',
     'models/vae/model_best_weights_anomaly_detection_vae_designed.h5',
+    'models/vae/model_best_weights_anomaly_detection_vae.h5',
     'models/convae/model_best_weights_anomaly_convae.h5'
 ]
 
@@ -33,7 +33,7 @@ classification_models = [
     'models/densenet/model_best_weights_classification_densenet_existing_completion.h5'
 ]
 
-best_model_anomaly_detection = 0
+best_model_anomaly_detection = 1
 best_model_classification = 0
 
 @app.get("/")

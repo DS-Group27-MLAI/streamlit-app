@@ -33,7 +33,7 @@ classification_models = [
     'models/densenet/model_best_weights_classification_densenet_existing_completion.h5'
 ]
 
-# Best Model with AD (Anomaly Detection) with index 1 (VAE Model)
+# Best Model with AD (Anomaly Detection) with index 1 (CVAE Model)
 best_model_anomaly_detection = 0
 
 # Best Model with Clasisification with index 0 (ResNet)
@@ -70,6 +70,10 @@ def get_image(style: str, file: UploadFile = File(...)):
     
     return {"output": output, "viz_output": viz_output, "label": image_label}
 
+@app.get("/backend/images/{image}")
+def get_image_url(image: str):
+    
+    return config.API_HOST + f"images/temp/{image}"
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8080)

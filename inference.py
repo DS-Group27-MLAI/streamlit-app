@@ -6,6 +6,15 @@ import uuid
 import matplotlib.pyplot as plt
 import visualization
 import tensorflow as tf
+from time import time
+from config import *
+
+
+"""
+Loading the best classification model into memory
+"""
+resnet_model = load_model(classification_models[best_model_classification])
+
 
 """
 SSIMLoss: which calculate the structural similarity between two images using tensorflow
@@ -15,13 +24,20 @@ def SSIMLoss(y_true, y_pred):
 
 
 """
+Loading the best cvae model into memory
+"""
+cvae_model = load_model(anomaly_detection_models[best_model_anomaly_detection], {'SSIMLoss': SSIMLoss})
+
+
+"""
 Inference using the ResNet Model
 """
 def resnet_infer_model(model_name, image):
-    model = load_model(model_name)
-    y_pred = model.predict((image.reshape(-1, 224, 224, 1)) / 255)
+    t1 = time()
+    y_pred = resnet_model.predict((image.reshape(-1, 224, 224, 1)) / 255)
+    t2 = time()
     
-    return True if y_pred[0] > 0.5 else False, y_pred
+    return True if y_pred[0] > 0.5 else False, y_pred, t2 - t1
 
 
 """
@@ -29,9 +45,11 @@ Inference using the DenseNet Model
 """
 def densenet_infer_model(model_name, image):
     model = load_model(model_name)
+    t1 = time()
     y_pred = model.predict((image.reshape(-1, 224, 224, 3)) / 255)
+    t2 = time()
     
-    return True if y_pred[0] > 0.5 else False
+    return True if y_pred[0] > 0.5 else False, y_pred, t2 - t1
 
 
 """
@@ -54,26 +72,29 @@ Inference using the variational autoencoder (VAE) Model
 def vae_ad_infer_model(model_name, image):
     # vae
     model = load_model(model_name, {'SSIMLoss': SSIMLoss})
+    t1 = time()
     pred = model.predict((image.reshape(-1, 56, 56)-127.5)/127.5)
+    t2 = time()
     result = (pred*127.5 + 127.5).reshape(56,56)
     filename = 'images/temp/' + str(uuid.uuid4()) + ".jpg"
     plt.imsave(filename, np.clip(result.astype(np.int), a_min=0, a_max=255), cmap='gray')
     
-    return filename, pred
+    return filename, pred, t2-t1
 
 
 """
 Inference using Conditional variational autoencoder (CVAE) model
 """
 def cvae_ad_infer_model(model_name, image):
-    # vae
-    model = load_model(model_name, {'SSIMLoss': SSIMLoss})
-    pred, z = model.predict([(image.reshape(-1, 56, 56, 1)-127.5)/127.5, np.random.randint(0,2,(1,1))])
+    t1 = time()
+    # cvae
+    pred, z = cvae_model.predict([(image.reshape(-1, 56, 56, 1)-127.5)/127.5, np.random.randint(0,2,(1,1))])
+    t2 = time()
     pred_image = (pred*127.5 + 127.5).reshape(56,56)
     filename = 'images/temp/' + str(uuid.uuid4()) + ".jpg"
     plt.imsave(filename, np.clip(pred_image.astype(np.int), a_min=0, a_max=255), cmap='gray')
     
-    return filename, (pred, z)
+    return filename, (pred, z), t2-t1
 
 """
 Choose the best model in Classification based on Input Parameter
@@ -87,15 +108,15 @@ def classification_best_model(idx, model_list, image):
     # for i in range(len(model_list)):
     if idx == 0:
         image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
-        result, y_pred = resnet_infer_model(model_list[idx], image)
+        result, y_pred, inference_time = resnet_infer_model(model_list[idx], image)
         image_label = "Normal" if result == False else "Anomaly"
         viz_result = visualization.viz_classification(image, image_label, y_pred)
     elif idx == 1:
-        result = densenet_infer_model(model_list[idx], image)
+        result, y_pred, inference_time = densenet_infer_model(model_list[idx], image)
         image_label = "Normal" if result == False else "Anomaly"
-        viz_result = visualization.viz_classification(image)
+        viz_result = visualization.viz_classification(image, image_label, y_pred)
 
-    return result, viz_result, image_label
+    return result, viz_result, image_label, inference_time
 
 
 """
@@ -117,13 +138,13 @@ def ad_best_model(idx, model_list, image, image28x28=None):
     elif idx == 1:
         image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         image = cv2.resize(image, (56,56))
-        result, out_image = vae_ad_infer_model(model_list[idx], image)
+        result, out_image, inference_time = vae_ad_infer_model(model_list[idx], image)
         viz_result, image_label = visualization.viz_vae_ssim(image, out_image, SSIMLoss)
     # cvae
     elif idx == 0:
         image = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
         image = cv2.resize(image, (56,56))
-        result, out_image = cvae_ad_infer_model(model_list[idx], image)
+        result, out_image, inference_time = cvae_ad_infer_model(model_list[idx], image)
         viz_result, image_label = visualization.viz_cvae_hist(image, out_image, SSIMLoss)
 
-    return result, viz_result, image_label
+    return result, viz_result, image_label, inference_time

@@ -56,3 +56,8 @@ def anomaly_detection_inference(labels=[0, 1]):
         viz_result = np.array(Image.open(img_path.get("viz_output")))
         col2.image(viz_result, caption='Visualization Output Image from network')
         col2.text(img_path.get("label") + " Image")
+        
+        inference_time = img_path.get("inference_time")
+        
+        col2.markdown("**Model Name:** Conditional Variational Autoencoder (CVAE) (Designed DNN)")
+        col2.markdown("**Model Inference Time:** " + str(inference_time))

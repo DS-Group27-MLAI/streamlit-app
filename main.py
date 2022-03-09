@@ -17,28 +17,10 @@ from PIL import Image
 import config
 import inference
 
+from config import *
+
 # call FastAPI app
 app = FastAPI()
-
-# in order of performance
-anomaly_detection_models = [
-    'models/vae/model_best_weights_anomaly_detection_vae_designed.h5',
-    'models/vae/model_best_weights_anomaly_detection_vae.h5',
-    'models/convae/model_best_weights_anomaly_convae.h5'
-]
-
-# in order of performance
-classification_models = [
-    'models/resnet/model_best_weights_classification_resnet_existing_completion.h5',
-    'models/densenet/model_best_weights_classification_densenet_existing_completion.h5'
-]
-
-# Best Model with AD (Anomaly Detection) with index 1 (CVAE Model)
-best_model_anomaly_detection = 0
-
-# Best Model with Clasisification with index 0 (ResNet)
-best_model_classification = 0
-
 
 """
 REST API:
@@ -63,12 +45,12 @@ def get_image(style: str, file: UploadFile = File(...)):
     image = np.array(Image.open(file.file))
     if style == "anomaly_detection":
         image = cv2.resize(image, (224,224))
-        output, viz_output, image_label = inference.ad_best_model(best_model_anomaly_detection, anomaly_detection_models, image)
+        output, viz_output, image_label, inference_time = inference.ad_best_model(best_model_anomaly_detection, anomaly_detection_models, image)
     elif style == "classification":
         image = cv2.resize(image, (224,224))
-        output, viz_output, image_label = inference.classification_best_model(best_model_classification, classification_models, image)
+        output, viz_output, image_label, inference_time = inference.classification_best_model(best_model_classification, classification_models, image)
     
-    return {"output": output, "viz_output": viz_output, "label": image_label}
+    return {"output": output, "viz_output": viz_output, "label": image_label, "inference_time": inference_time}
 
 @app.get("/backend/images/{image}")
 def get_image_url(image: str):

@@ -60,6 +60,6 @@ def classification_inference(labels=[0, 1]):
             
         inference_time = is_anomaly.get("inference_time")
             
-        col2.markdown("**Model Name:** ResNet 6 Module (Existing DNN)")
+        col2.markdown("**Model Name:** ResNet 5 Repeated Module (Existing DNN)")
         col2.markdown("**Model Inference Time:** " + str(inference_time))
         
